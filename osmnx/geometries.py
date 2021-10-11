@@ -228,7 +228,7 @@ def geometries_from_place(query, tags, which_result=None, buffer_dist=None, inte
     utils.log("Constructed place geometry polygon(s) to query API")
 
     # create GeoDataFrame using this polygon(s) geometry
-    gdf = geometries_from_polygon(polygon, tags, interesection)
+    gdf = geometries_from_polygon(polygon, tags, intersection)
 
     return gdf
 
