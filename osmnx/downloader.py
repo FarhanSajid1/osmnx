@@ -399,7 +399,7 @@ def _make_overpass_polygon_coord_strs(polygon):
     return polygon_coord_strs
 
 
-def _create_overpass_query(polygon_coord_str, tags):
+def _create_overpass_query(polygon_coord_str, tags, intersection=False):
     """
     Create an overpass query string based on passed tags.
 
@@ -450,18 +450,27 @@ def _create_overpass_query(polygon_coord_str, tags):
 
     # add node/way/relation query components one at a time
     components = []
-    for d in tags_list:
-        for key, value in d.items():
+    if intersection:
+        tags = ""
+        for d in tags_list:
+            for key, value in d.items:
+                tags = tags + f"['{key}'='{value}']"
+        tag_str = f"{tags}(poly:'{polygon_coord_str}');(._;>;);"
+        for kind in ("node", "way", "relation"):
+            components.append(f"({kind}{tag_str});")
+    else:
+        for d in tags_list:
+            for key, value in d.items():
 
-            if isinstance(value, bool):
-                # if bool (ie, True) just pass the key, no value
-                tag_str = f"['{key}'](poly:'{polygon_coord_str}');(._;>;);"
-            else:
-                # otherwise, pass "key"="value"
-                tag_str = f"['{key}'='{value}'](poly:'{polygon_coord_str}');(._;>;);"
+                if isinstance(value, bool):
+                    # if bool (ie, True) just pass the key, no value
+                    tag_str = f"['{key}'](poly:'{polygon_coord_str}');(._;>;);"
+                else:
+                    # otherwise, pass "key"="value"
+                    tag_str = f"['{key}'='{value}'](poly:'{polygon_coord_str}');(._;>;);"
 
-            for kind in ("node", "way", "relation"):
-                components.append(f"({kind}{tag_str});")
+                for kind in ("node", "way", "relation"):
+                    components.append(f"({kind}{tag_str});")
 
     # finalize query and return
     components = "".join(components)
@@ -519,7 +528,7 @@ def _osm_network_download(polygon, network_type, custom_filter):
     return response_jsons
 
 
-def _osm_geometries_download(polygon, tags):
+def _osm_geometries_download(polygon, tags, intersection):
     """
     Retrieve non-networked elements within boundary from the Overpass API.
 
@@ -542,7 +551,7 @@ def _osm_geometries_download(polygon, tags):
 
     # pass exterior coordinates of each polygon in list to API, one at a time
     for polygon_coord_str in polygon_coord_strs:
-        query_str = _create_overpass_query(polygon_coord_str, tags)
+        query_str = _create_overpass_query(polygon_coord_str, tags, intersection)
         response_json = overpass_request(data={"data": query_str})
         response_jsons.append(response_json)
 

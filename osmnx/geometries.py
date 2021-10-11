@@ -233,7 +233,7 @@ def geometries_from_place(query, tags, which_result=None, buffer_dist=None):
     return gdf
 
 
-def geometries_from_polygon(polygon, tags):
+def geometries_from_polygon(polygon, tags, intersection=False):
     """
     Create GeoDataFrame of OSM entities within boundaries of a (multi)polygon.
 
@@ -243,7 +243,7 @@ def geometries_from_polygon(polygon, tags):
         geographic boundaries to fetch geometries within
     tags : dict
         Dict of tags used for finding objects in the selected area. Results
-        returned are the union, not intersection of each individual tag.
+        returned are either the union or intersection of each individual tag.
         Each result matches at least one given tag. The dict keys should be
         OSM tags, (e.g., `building`, `landuse`, `highway`, etc) and the dict
         values should be either `True` to retrieve all items with the given
@@ -275,7 +275,7 @@ def geometries_from_polygon(polygon, tags):
         )
 
     # download the geometry data from OSM
-    response_jsons = downloader._osm_geometries_download(polygon, tags)
+    response_jsons = downloader._osm_geometries_download(polygon, tags, intersection)
 
     # create GeoDataFrame from the downloaded data
     gdf = _create_gdf(response_jsons, polygon, tags)
