@@ -453,7 +453,7 @@ def _create_overpass_query(polygon_coord_str, tags, intersection=False):
     if intersection:
         tags = ""
         for d in tags_list:
-            for key, value in d.items:
+            for key, value in d.items():
                 tags = tags + f"['{key}'='{value}']"
         tag_str = f"{tags}(poly:'{polygon_coord_str}');(._;>;);"
         for kind in ("node", "way", "relation"):
