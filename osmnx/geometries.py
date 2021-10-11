@@ -162,7 +162,7 @@ def geometries_from_address(address, tags, dist=1000):
     return gdf
 
 
-def geometries_from_place(query, tags, which_result=None, buffer_dist=None):
+def geometries_from_place(query, tags, which_result=None, buffer_dist=None, intersection=False):
     """
     Create GeoDataFrame of OSM entities within boundaries of geocodable place(s).
 
@@ -228,7 +228,7 @@ def geometries_from_place(query, tags, which_result=None, buffer_dist=None):
     utils.log("Constructed place geometry polygon(s) to query API")
 
     # create GeoDataFrame using this polygon(s) geometry
-    gdf = geometries_from_polygon(polygon, tags)
+    gdf = geometries_from_polygon(polygon, tags, interesection)
 
     return gdf
 
